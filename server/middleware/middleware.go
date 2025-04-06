@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -48,8 +49,18 @@ func createDBInstance() {
 	fmt.Println("Collection instance created!")
 }
 
-func GetAllTasks(w http.ResponseWriter, r *http.Request)    {}
-func CreateTask(w http.ResponseWriter, r *http.Request)     {}
+func GetAllTasks(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	payload := getAllTasks()
+	json.NewEncoder(w).Encode(payload)
+}
+
+func CreateTask(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func TaskComplete(w http.ResponseWriter, r *http.Request)   {}
 func UndoTask(w http.ResponseWriter, r *http.Request)       {}
 func DeleteTask(w http.ResponseWriter, r *http.Request)     {}
