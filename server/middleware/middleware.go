@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/madhavarora03/todo-list/models"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"log"
@@ -112,18 +113,80 @@ func DeleteAllTasks(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(count)
 }
 
-func getAllTasks() {
+func getAllTasks() []bson.M {
+	cur, err := collection.Find(context.Background(), bson.D{})
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	var results []bson.M
+	for cur.Next(context.Background()) {
+		var result bson.M
+		e := cur.Decode(&result)
+		if e != nil {
+			log.Fatal(e)
+		}
+		results = append(results, result)
+	}
+
+	if err := cur.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	cur.Close(context.Background())
+	return results
 }
 
-func insertOneTask(t models.TodoList) {}
+func insertOneTask(task models.TodoList) {
+	insertResult, err := collection.InsertOne(context.Background(), task)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Inserted a single record:", insertResult.InsertedID)
+}
 
 func taskComplete(taskId string) {
+	id, _ := bson.ObjectIDFromHex(taskId)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{"status": true}}
 
+	result, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Modified count:", result.ModifiedCount)
 }
 
-func undoTask(taskId string) {}
+func undoTask(taskId string) {
+	id, _ := bson.ObjectIDFromHex(taskId)
+	filter := bson.M{"_id": id}
+	update := bson.M{"$set": bson.M{"status": false}}
 
-func deleteOneTask(taskId string) {}
+	result, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Modified count:", result.ModifiedCount)
+}
 
-func deleteAllTasks() {}
+func deleteOneTask(taskId string) {
+	id, _ := bson.ObjectIDFromHex(taskId)
+	filter := bson.M{"_id": id}
+	d, err := collection.DeleteOne(context.Background(), filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Deleted document:", d.DeletedCount)
+}
+
+func deleteAllTasks() int64 {
+	d, err := collection.DeleteMany(context.Background(), bson.D{}, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println("Deleted documents:", d.DeletedCount)
+	return d.DeletedCount
+}
