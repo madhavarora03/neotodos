@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/madhavarora03/todo-list/models"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"log"
@@ -52,16 +54,45 @@ func createDBInstance() {
 func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
 
 	payload := getAllTasks()
 	json.NewEncoder(w).Encode(payload)
 }
 
 func CreateTask(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
 
+	var task models.TodoList
+	json.NewDecoder(r.Body).Decode(&task)
+	insertOneTask(task)
+
+	json.NewEncoder(w).Encode(task)
 }
 
-func TaskComplete(w http.ResponseWriter, r *http.Request)   {}
+func TaskComplete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT")
+
+	params := mux.Vars(r)
+	taskComplete(params["id"])
+
+	json.NewEncoder(w).Encode(params["id"])
+}
+
 func UndoTask(w http.ResponseWriter, r *http.Request)       {}
 func DeleteTask(w http.ResponseWriter, r *http.Request)     {}
 func DeleteAllTasks(w http.ResponseWriter, r *http.Request) {}
+
+func getAllTasks() {
+
+}
+
+func insertOneTask(t models.TodoList) {}
+
+func taskComplete(taskId string) {
+
+}
