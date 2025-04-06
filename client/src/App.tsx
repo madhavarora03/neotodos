@@ -1,19 +1,30 @@
 import {Input} from "@/components/ui/input.tsx";
 import {Loader2, Pencil} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Header from "@/components/header.tsx";
-import {Post} from "@/types/interfaces"
-import Posts from "@/post.tsx";
+import {Todo} from "@/types/interfaces"
+import Todos from "@/components/todo-list.tsx";
+import {apiClient} from "@/lib/api-client.ts";
 
 export default function App() {
     const [input, setInput] = useState("")
     const [loadingFetch, setLoadingFetch] = useState(true)
     const [loadingInput, setLoadingInput] = useState(false)
-    const [posts, setPosts] = useState<Post[]>([])
+    const [todos, setTodos] = useState<Todo[]>([])
 
-    const handleSubmit = async ()=>{
+    useEffect(() => {
+        apiClient.getTodos()
+            .then((payload) => {
+                setTodos(payload)
+            })
+            .catch((err) => console.error(err))
+            .finally(() => setLoadingFetch(false))
+    }, [])
 
+    const handleSubmit = async () => {
+        setLoadingInput(true);
+        setLoadingInput(false);
     }
 
     return (
@@ -26,7 +37,7 @@ export default function App() {
                 </Button>
             </div>
             <div>
-                {loadingFetch ? <Loader2 className="animate-spin w-12 h-12"/> : <Posts posts={posts}/>}
+                {loadingFetch ? <Loader2 className="animate-spin w-12 h-12"/> : <Todos todos={todos}/>}
             </div>
         </div>
     )
