@@ -15,6 +15,13 @@ class ApiClient{
         });
     }
 
+    async createTodo(task: string){
+        return this.fetch<Todo>("/task", {
+            method: "POST",
+            body: {task}
+        })
+    }
+
     private async fetch<T, B = unknown>(
         endpoint: string,
         options: FetchOptions<B> = { method: "GET" }
@@ -26,10 +33,7 @@ class ApiClient{
             method,
             data: body,
             headers: {
-                "Content-Type":
-                    body && typeof body === "object"
-                        ? "application/json"
-                        : headers["Content-Type"] ?? "",
+                "Content-Type": "application/json",
                 ...headers,
             },
         });

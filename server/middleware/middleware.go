@@ -52,8 +52,8 @@ func createDBInstance() {
 	fmt.Println("Collection instance created!")
 }
 
-func GetAllTasks(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+func GetAllTasks(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET")
 
@@ -62,21 +62,24 @@ func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	var task models.TodoList
 	json.NewDecoder(r.Body).Decode(&task)
+	fmt.Println(task)
 	insertOneTask(task)
 
 	json.NewEncoder(w).Encode(task)
 }
 
 func TaskComplete(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "PUT")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	params := mux.Vars(r)
 	taskComplete(params["id"])
@@ -85,9 +88,10 @@ func TaskComplete(w http.ResponseWriter, r *http.Request) {
 }
 
 func UndoTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "PUT")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	params := mux.Vars(r)
 	undoTask(params["id"])
@@ -96,18 +100,20 @@ func UndoTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	params := mux.Vars(r)
 	deleteOneTask(params["id"])
 }
 
-func DeleteAllTasks(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+func DeleteAllTasks(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	count := deleteAllTasks()
 	json.NewEncoder(w).Encode(count)

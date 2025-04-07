@@ -3,7 +3,7 @@ import {Loader2, Pencil} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import {useEffect, useState} from "react";
 import Header from "@/components/header.tsx";
-import {Todo} from "@/types/interfaces"
+import {Todo} from "@/types/interfaces";
 import Todos from "@/components/todo-list.tsx";
 import {apiClient} from "@/lib/api-client.ts";
 
@@ -16,7 +16,7 @@ export default function App() {
     useEffect(() => {
         apiClient.getTodos()
             .then((payload) => {
-                setTodos(payload)
+                setTodos(payload ?? [])
             })
             .catch((err) => console.error(err))
             .finally(() => setLoadingFetch(false))
@@ -24,7 +24,14 @@ export default function App() {
 
     const handleSubmit = async () => {
         setLoadingInput(true);
-        setLoadingInput(false);
+        try {
+            console.log(input)
+            await apiClient.createTodo(input);
+        } catch (err) {
+            console.error(err)
+        } finally {
+            setLoadingInput(false);
+        }
     }
 
     return (
