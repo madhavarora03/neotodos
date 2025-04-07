@@ -69,7 +69,6 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 	var task models.TodoList
 	json.NewDecoder(r.Body).Decode(&task)
-	fmt.Println(task)
 	insertOneTask(task)
 
 	json.NewEncoder(w).Encode(task)

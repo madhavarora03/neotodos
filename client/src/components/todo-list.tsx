@@ -2,18 +2,23 @@ import {Todo} from "@/types/interfaces.ts";
 import {Card, CardContent, CardTitle} from "@/components/ui/card.tsx";
 import {Check, Trash2, Undo2} from "lucide-react";
 import {apiClient} from "@/lib/api-client.ts";
+import {useQueryClient} from "@tanstack/react-query";
 
 export default function Todos({todos}: { todos: Todo[] }) {
+    const queryClient = useQueryClient()
     const handleDelete = async (id: string) => {
         await apiClient.deleteTodo(id)
+        queryClient.invalidateQueries({queryKey: ["todos"]})
     }
 
-    const handleComplete = async (id: string) =>{
+    const handleComplete = async (id: string) => {
         await apiClient.taskComplete(id)
+        queryClient.invalidateQueries({queryKey: ["todos"]})
     }
 
-    const handleUndo = async (id: string) =>{
+    const handleUndo = async (id: string) => {
         await apiClient.undoTask(id)
+        queryClient.invalidateQueries({queryKey: ["todos"]})
     }
     return (
         <div className="w-full space-y-6 lg:space-y-8">
@@ -22,10 +27,10 @@ export default function Todos({todos}: { todos: Todo[] }) {
                     <CardContent className="flex items-center justify-between w-full">
                         <CardTitle className={`${status && "line-through"}`}>{task}</CardTitle>
                         <div className="flex items-center gap-4">
-                            <button disabled={status} className="group" onClick={()=>handleComplete(_id)}>
+                            <button disabled={status} className="group" onClick={() => handleComplete(_id)}>
                                 <Check className="text-green-600 group-disabled:opacity-50"/>
                             </button>
-                            <button disabled={!status} className="group" onClick={()=>handleUndo(_id)}>
+                            <button disabled={!status} className="group" onClick={() => handleUndo(_id)}>
                                 <Undo2 className="text-amber-600 group-disabled:opacity-50"/>
                             </button>
                             <button className="group" onClick={() => handleDelete(_id)}>
