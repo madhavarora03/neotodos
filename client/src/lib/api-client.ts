@@ -22,6 +22,24 @@ class ApiClient{
         })
     }
 
+    async taskComplete(id: string) {
+        return this.fetch(`/task/${id}`, {
+            method: "PUT"
+        })
+    }
+
+    async undoTask(id: string){
+        return this.fetch(`/task/undo/${id}`, {
+            method: "PUT"
+        })
+    }
+
+    async deleteTodo(id: string){
+        return this.fetch<void>(`/task/${id}`, {
+            method:"DELETE",
+        })
+    }
+
     private async fetch<T, B = unknown>(
         endpoint: string,
         options: FetchOptions<B> = { method: "GET" }

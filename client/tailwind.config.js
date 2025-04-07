@@ -25,6 +25,12 @@ export default {
                 base: '500', heading: '700',
             },
         },
-    }, plugins: [require("tailwindcss-animate")],
+    }, plugins: [require("tailwindcss-animate"), function ({addVariant, e}) {
+        addVariant('group-disabled', ({modifySelectors, separator}) => {
+            modifySelectors(({className}) => {
+                return `.group:disabled .${e(`group-disabled${separator}${className}`)}, .group[disabled] .${e(`group-disabled${separator}${className}`)}`;
+            });
+        });
+    }],
 }
 

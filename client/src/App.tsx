@@ -43,9 +43,7 @@ export default function App() {
                     {loadingInput ? <Loader2 className="animate-spin"/> : <Pencil/>}
                 </Button>
             </div>
-            <div>
-                {loadingFetch ? <Loader2 className="animate-spin w-12 h-12"/> : <Todos todos={todos}/>}
-            </div>
+            {loadingFetch ? <Loader2 className="animate-spin w-12 h-12"/> : <Todos todos={todos}/>}
         </div>
     )
 }
